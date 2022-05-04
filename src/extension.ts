@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import { AxiosError } from 'axios';
 import * as vscode from 'vscode';
+const axios = require('axios').default;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -19,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from duck-comments!');
 	});
 
-	let insertDuckFact = vscode.commands.registerCommand('dck.insertDuckFact', () => {
+	let insertDuckFact = vscode.commands.registerCommand('dck.insertDuckFact', async () => {
 		
 			const editor = vscode.window.activeTextEditor;
 			
@@ -29,24 +31,29 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
+			//  get duck facts
+
 			// let config = vscode.workspace.getConfiguration();
 			// let newPos = new vscode.Position(editor.selection.active.line === 0 ? 0 : editor.selection.active.line - 1, 0);
 			let newPos = new vscode.Position(editor.selection.active.line, 0);
+			let fact = await getFact();
 
 			editor.edit(async (editBuilder: vscode.TextEditorEdit) => {
 
-				let duckFact = "\n" + "panana" + "🦆\n";
+				let duckFact = "\n🦆🦆" + fact + "🦆🦆\n";
 				editBuilder.insert(newPos, duckFact);
 				console.log("Inserted");
-				
-				// await vscode.commands.executeCommand('editor.action.addCommentLine', {
-				// 	to: newPos,
-				// });
+			
 			});
 
 			vscode.commands.executeCommand("cursorMove",
 			{
 					to: "up", by:'wrappedLine', value:1
+			});
+
+			vscode.commands.executeCommand("cursorMove",
+			{
+					to: "wrappedLineEnd", by:'wrappedLine'
 			});
 
 			vscode.commands.executeCommand('editor.action.addCommentLine');
@@ -56,6 +63,40 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(insertDuckFact);
+}
+
+
+type GetFactResponse = {
+	
+		image: string,
+		fact: string,
+
+};
+
+async function getFact() {
+	let factData: GetFactResponse;
+  try {
+
+		let URL = "https://some-random-api.ml/animal/kangaroo";
+    // 👇️ const data: GetUsersResponse
+    const { data, status } = await axios.get(URL);
+		
+		// let factData = JSON.stringify(data, null, 4);
+		factData = data;
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+    return factData.fact;
+
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
 }
 
 // this method is called when your extension is deactivated
