@@ -19,7 +19,30 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from duck-comments!');
 	});
 
+	let insertDuckFact = vscode.commands.registerCommand('dck.insertDuckFact', () => {
+		
+			const editor = vscode.window.activeTextEditor;
+			
+			if(!editor) {
+				console.log("No editor available!");
+				
+				return;
+			}
+
+			console.log(editor.selection);
+			
+
+			editor.edit((editBuilder: vscode.TextEditorEdit) => {
+
+				let newPos = new vscode.Position(editor.selection.active.line, 0);
+				let duckFact = "panana" + "🦆\n";
+				editBuilder.insert(newPos, duckFact);
+			});
+
+	});
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(insertDuckFact);
 }
 
 // this method is called when your extension is deactivated

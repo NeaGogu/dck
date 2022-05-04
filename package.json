@@ -10,14 +10,20 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:dck.helloWorld"
+        "onCommand:dck.insertDuckFact"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
+				"category": "Duck",
 				"command": "dck.helloWorld",
-				"title": "Hello World"
+				"title": "Insert Duck Fact Comment"
+			},
+			{
+				"category": "Duck",
+				"command": "dck.insertDuckFact",
+				"title": "Insert Duck Fact Comment"
 			}
 		]
 	},
