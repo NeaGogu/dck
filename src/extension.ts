@@ -29,15 +29,28 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
-			console.log(editor.selection);
-			
+			// let config = vscode.workspace.getConfiguration();
+			// let newPos = new vscode.Position(editor.selection.active.line === 0 ? 0 : editor.selection.active.line - 1, 0);
+			let newPos = new vscode.Position(editor.selection.active.line, 0);
 
-			editor.edit((editBuilder: vscode.TextEditorEdit) => {
+			editor.edit(async (editBuilder: vscode.TextEditorEdit) => {
 
-				let newPos = new vscode.Position(editor.selection.active.line, 0);
-				let duckFact = "panana" + "🦆\n";
+				let duckFact = "\n" + "panana" + "🦆\n";
 				editBuilder.insert(newPos, duckFact);
+				console.log("Inserted");
+				
+				// await vscode.commands.executeCommand('editor.action.addCommentLine', {
+				// 	to: newPos,
+				// });
 			});
+
+			vscode.commands.executeCommand("cursorMove",
+			{
+					to: "up", by:'wrappedLine', value:1
+			});
+
+			vscode.commands.executeCommand('editor.action.addCommentLine');
+			
 
 	});
 
